@@ -8,19 +8,23 @@ namespace Phonebook
     {
         static void Main(string[] args)
         {
+            PhonebookContext context = new PhonebookContext();
+            PhoneBookService svc = new PhoneBookService(context, true);
+            svc.AutoSeed();
 
+            /*Console.WriteLine("aaaA");
             var json = File.ReadAllText("Resources/defaultData.json");
             var seedData = JsonSerializer.Deserialize<DefaultData>(json);
 
             using var context = new PhonebookContext();
 
-            /*foreach (var category in seedData.Categories) 
+            foreach (var category in seedData.Categories) 
             {
                 context.Categories.Add(new ContactCategory() { Name = category.Name! });
             }
             context.Categories.AddRange(context.Categories);
 
-            context.SaveChanges();*/
+            context.SaveChanges();
 
             List<Contact> contacts = new List<Contact>();
 
@@ -29,7 +33,7 @@ namespace Phonebook
                 if (!string.IsNullOrEmpty(contact.Category))
                 {
                     Category category = context.Categories.FirstOrDefault(x => x.Name == contact.Category)!;
-                    contact.CategoryId = category.ContactCategoryId;
+                    contact.CategoryId = category.CategoryId;
                 }
                 contacts.Add(new Contact()
                 {
@@ -42,7 +46,7 @@ namespace Phonebook
                 });
             }
             context.AddRange(contacts);
-            context.SaveChanges();
+            context.SaveChanges();*/
         }
     }
 }
