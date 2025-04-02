@@ -10,7 +10,9 @@ namespace Phonebook
         {
             PhonebookContext context = new PhonebookContext();
             PhoneBookService svc = new PhoneBookService(context, true);
-            svc.AutoSeed();
+            UserInteraction ui = new UserInteraction();
+            PhonebookApp app = new PhonebookApp(svc, ui);
+            app.Run();
 
             /*Console.WriteLine("aaaA");
             var json = File.ReadAllText("Resources/defaultData.json");
