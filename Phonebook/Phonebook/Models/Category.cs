@@ -2,7 +2,7 @@
 
 namespace Phonebook
 {
-    public class ContactCategory
+    public class Category
     {
         public int ContactCategoryId { get; set; }
 

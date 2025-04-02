@@ -1,0 +1,155 @@
+{
+  "Categories": [
+    {
+      "Name": "Family"
+    },
+    {
+      "Name": "Friends"
+    },
+    {
+      "Name": "Work"
+    }
+  ],
+  "Contacts": [
+    {
+      "FirstName": "John",
+      "LastName": "Doe",
+      "PhoneNumber": "+12025551234",
+      "Email": "johndoe@email.com",
+      "Category": "Family"
+    },
+    {
+      "FirstName": "Alice",
+      "LastName": "Smith",
+      "PhoneNumber": "+442079461234",
+      "Email": "alice.smith@email.com",
+      "Category": "Friends"
+    },
+    {
+      "FirstName": "Robert",
+      "LastName": "Johnson",
+      "PhoneNumber": "+33140302010",
+      "Email": null,
+      "Category": "Work"
+    },
+    {
+      "FirstName": "Emily",
+      "LastName": "Davis",
+      "PhoneNumber": "+498912345678",
+      "Email": "emilyd@email.com",
+      "Category": null
+    },
+    {
+      "FirstName": "Michael",
+      "LastName": "Brown",
+      "PhoneNumber": "+14155559876",
+      "Email": "michael.b@email.com",
+      "Category": "Family"
+    },
+    {
+      "FirstName": "Sarah",
+      "LastName": "Wilson",
+      "PhoneNumber": "+61298765432",
+      "Email": "sarah.w@email.com",
+      "Category": "Friends"
+    },
+    {
+      "FirstName": "David",
+      "LastName": "Martinez",
+      "PhoneNumber": "+34913456789",
+      "Email": null,
+      "Category": "Work"
+    },
+    {
+      "FirstName": "Emma",
+      "LastName": "Taylor",
+      "PhoneNumber": "+390612345678",
+      "Email": "emmat@email.com",
+      "Category": null
+    },
+    {
+      "FirstName": "James",
+      "LastName": "Anderson",
+      "PhoneNumber": "+13055558765",
+      "Email": "james.a@email.com",
+      "Category": "Family"
+    },
+    {
+      "FirstName": "Olivia",
+      "LastName": "Thomas",
+      "PhoneNumber": "+4689876543",
+      "Email": null,
+      "Category": "Friends"
+    },
+    {
+      "FirstName": "William",
+      "LastName": "Harris",
+      "PhoneNumber": "+52557654321",
+      "Email": "williamh@email.com",
+      "Category": "Work"
+    },
+    {
+      "FirstName": "Sophia",
+      "LastName": "White",
+      "PhoneNumber": "+74951234567",
+      "Email": null,
+      "Category": null
+    },
+    {
+      "FirstName": "Benjamin",
+      "LastName": "Lewis",
+      "PhoneNumber": "+12125556789",
+      "Email": "benjamin@email.com",
+      "Category": "Family"
+    },
+    {
+      "FirstName": "Charlotte",
+      "LastName": "Hall",
+      "PhoneNumber": "+41228765432",
+      "Email": "charlotte@email.com",
+      "Category": "Friends"
+    },
+    {
+      "FirstName": "Daniel",
+      "LastName": "Young",
+      "PhoneNumber": "+49303456789",
+      "Email": null,
+      "Category": "Work"
+    },
+    {
+      "FirstName": "Mia",
+      "LastName": "Allen",
+      "PhoneNumber": "+8139876543",
+      "Email": "miaa@email.com",
+      "Category": null
+    },
+    {
+      "FirstName": "Henry",
+      "LastName": "Scott",
+      "PhoneNumber": "+16465554321",
+      "Email": "henry@email.com",
+      "Category": "Family"
+    },
+    {
+      "FirstName": "Ava",
+      "LastName": "King",
+      "PhoneNumber": "+3227654321",
+      "Email": null,
+      "Category": "Friends"
+    },
+    {
+      "FirstName": "Samuel",
+      "LastName": "Green",
+      "PhoneNumber": "+27112345678",
+      "Email": "samuel@email.com",
+      "Category": "Work"
+    },
+    {
+      "FirstName": "Isabella",
+      "LastName": "Wright",
+      "PhoneNumber": "+6567891234",
+      "Email": null,
+      "Category": null
+    }
+  ]
+}

@@ -15,7 +15,7 @@ namespace Phonebook
         [Column(TypeName = "nvarchar(50)")]
         public string? Email { get; set; }
         public int? ContactCategoryId { get; set; } 
-        public ContactCategory? Category { get; set; }
+        public Category? Category { get; set; }
 
     }
 }
