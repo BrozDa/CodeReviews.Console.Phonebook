@@ -43,7 +43,7 @@ namespace Phonebook
             bool confirmation = AnsiConsole.Prompt(
                 new SelectionPrompt<bool>()
                 .AddChoices(true, false)
-                .UseConverter(x => x == true ? "Confirm" : "Cancel")
+                .UseConverter(x => x == true ? AppStrings.CONFIRM : AppStrings.NOCONFIRM)
                 );
 
             return confirmation;
@@ -184,7 +184,7 @@ namespace Phonebook
                 categoryNames.Add(AppStrings.NOCATEGORY);
             }
 
-            AnsiConsole.MarkupLine($"{prompt}:");
+            AnsiConsole.MarkupLine(prompt);
 
             var input = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -208,7 +208,7 @@ namespace Phonebook
             Console.WriteLine(prompt);
 
             string categoryStr = contact.Category == null ?
-                "-" : 
+                AppStrings.NOVALUE : 
                 contact.Category.Name;
 
             var table = new Table();
@@ -260,8 +260,8 @@ namespace Phonebook
                 contact.FirstName,
                 contact.LastName,
                 contact.PhoneNumber,
-                contact.Email?? "-",
-                contact.Category != null ? contact.Category.Name : "-"
+                contact.Email?? AppStrings.NOVALUE,
+                contact.Category != null ? contact.Category.Name : AppStrings.NOVALUE
             };
         }
         /// <summary>
