@@ -18,8 +18,7 @@ namespace Phonebook
         /// </summary>
         public void PrintAppHeader()
         {
-            Console.WriteLine("Welcome to your phone book");
-            Console.WriteLine("Application allows you to manage your contacts");
+            Console.WriteLine(AppStrings.APP_HEADER);
             Console.WriteLine();
         }
         /// <summary>
@@ -39,7 +38,7 @@ namespace Phonebook
         public bool ConfirmOperation()
         {
             Console.WriteLine();
-            AnsiConsole.MarkupLine("Please confirm your operation");
+            AnsiConsole.MarkupLine(AppStrings.CONFIRM_OPERATION);
 
             bool confirmation = AnsiConsole.Prompt(
                 new SelectionPrompt<bool>()
@@ -68,7 +67,7 @@ namespace Phonebook
             var input = AnsiConsole.Prompt(
                 new TextPrompt<string>(prompt)
                 .Validate(x => validStringFormat.IsMatch(x))
-                .ValidationErrorMessage("Can contain only alphanumeric characters with spaces in between")
+                .ValidationErrorMessage(AppStrings.INVALID_STRINGFORMAT)
                 );
             return input;
         }
@@ -82,7 +81,7 @@ namespace Phonebook
         {
             var inputPrompt = new TextPrompt<string>(prompt)
                 .Validate(x => validPhoneNumberFormat.IsMatch(x))
-                .ValidationErrorMessage("Phone number needs to start with '+' followed by digits, no spaces are allowed");
+                .ValidationErrorMessage(AppStrings.PHONENUMBER_FORMAT);
 
             if (defaultValue != null)
             {
@@ -102,19 +101,19 @@ namespace Phonebook
         {
             var options = Enum.GetValues<MainMenuOption>();
 
-            AnsiConsole.MarkupLine("[bold]Please select menu option:[/]");
+            AnsiConsole.MarkupLine(AppStrings.MENU_CHOOSE_OPTION);
             var input = AnsiConsole.Prompt(
                 new SelectionPrompt<MainMenuOption>()
                 .AddChoices(options)
                 .UseConverter(x => x switch
                 {
-                    MainMenuOption.ViewContacts => "View contacts",
-                    MainMenuOption.AddContact => "Add new contact",
-                    MainMenuOption.UpdateContact => "Update contact",
-                    MainMenuOption.DeleteContact => "Delete contact",
-                    MainMenuOption.ManageCategories => "Manage categories",
-                    MainMenuOption.Exit => "Exit",
-                    _ => throw new NotImplementedException("Invalid enum value passed in the main menu selection")
+                    MainMenuOption.ViewContacts => AppStrings.MAINMENU_VIEWCONTACTS,
+                    MainMenuOption.AddContact => AppStrings.MAINMENU_ADDCONTACT,
+                    MainMenuOption.UpdateContact => AppStrings.MAINMENU_UPDATECONTACT,
+                    MainMenuOption.DeleteContact => AppStrings.MAINMENU_DELETECONTACT,
+                    MainMenuOption.ManageCategories => AppStrings.MAINMENU_DELETECONTACT,
+                    MainMenuOption.Exit => AppStrings.MAINMENU_EXIT,
+                    _ => throw new NotImplementedException(AppStrings.MAINMENU_INVALIDOPTION)
                 }));
             Console.Clear();
             return input;
@@ -128,18 +127,18 @@ namespace Phonebook
         {
             var options = Enum.GetValues<ViewContactMenuOption>();
 
-            AnsiConsole.MarkupLine("[bold]Please select menu option:[/]");
+            AnsiConsole.MarkupLine(AppStrings.MENU_CHOOSE_OPTION);
 
             var input = AnsiConsole.Prompt(
                 new SelectionPrompt<ViewContactMenuOption>()
                 .AddChoices(options)
                 .UseConverter(x => x switch
                 {
-                    ViewContactMenuOption.ViewAll => "View all contacts",
-                    ViewContactMenuOption.ViewContactByName => "Filter by name",
-                    ViewContactMenuOption.ViewContactByCategory => "Filter by category",
-                    ViewContactMenuOption.ReturnToMainMenu => "Return to main menu",
-                    _ => throw new NotImplementedException("Invalid enum value passed in the main menu selection")
+                    ViewContactMenuOption.ViewAll => AppStrings.VIEWCONTACTMENU_VIEWALL,
+                    ViewContactMenuOption.ViewContactByName => AppStrings.VIEWCONTACTMENU_FILTERBYNAME,
+                    ViewContactMenuOption.ViewContactByCategory => AppStrings.VIEWCONTACTMENU_FILTERBYCATEGORY,
+                    ViewContactMenuOption.ReturnToMainMenu => AppStrings.VIEWCONTACTMENU_EXIT,
+                    _ => throw new NotImplementedException(AppStrings.VIEWCONTACTMENU_INVALIDOPTION)
                 }));
             Console.Clear();
             return input;
@@ -153,18 +152,18 @@ namespace Phonebook
         {
             var options = Enum.GetValues<CategoryMenuOption>();
 
-            AnsiConsole.MarkupLine("[bold]Please select menu option:[/]");
+            AnsiConsole.MarkupLine(AppStrings.MENU_CHOOSE_OPTION);
             var input = AnsiConsole.Prompt(
                 new SelectionPrompt<CategoryMenuOption>()
                 .AddChoices(options)
                 .UseConverter(x => x switch
                 {
-                    CategoryMenuOption.ViewCategories => "View categories",
-                    CategoryMenuOption.AddCategory => "Add new category",
-                    CategoryMenuOption.UpdateCategory => "Update category",
-                    CategoryMenuOption.DeleteCategory => "Delete category",
-                    CategoryMenuOption.ReturnToMainMenu => "Return to main menu",
-                    _ => throw new NotImplementedException("Invalid enum value passed in the main menu selection")
+                    CategoryMenuOption.ViewCategories => AppStrings.CATEGORYMENU_VIEW,
+                    CategoryMenuOption.AddCategory => AppStrings.CATEGORYMENU_ADD,
+                    CategoryMenuOption.UpdateCategory => AppStrings.CATEGORYMENU_UPDATE,
+                    CategoryMenuOption.DeleteCategory => AppStrings.CATEGORYMENU_DELETE,
+                    CategoryMenuOption.ReturnToMainMenu => AppStrings.CATEGORYMENU_EXIT,
+                    _ => throw new NotImplementedException(AppStrings.CATEGORYMENU_INVALIDOPTION)
                 }));
             Console.Clear();
             return input;
@@ -182,7 +181,7 @@ namespace Phonebook
 
             if (includeUncategorizedOpt)
             {
-                categoryNames.Add("Uncategorized");
+                categoryNames.Add(AppStrings.NOCATEGORY);
             }
 
             AnsiConsole.MarkupLine($"{prompt}:");
@@ -194,7 +193,7 @@ namespace Phonebook
 
             Console.Clear();
 
-            if (input != "Uncategorized")
+            if (input != AppStrings.NOCATEGORY)
                 return categories.Find(x => x.Name == input);
             else
                 return null;
@@ -208,16 +207,18 @@ namespace Phonebook
         {
             Console.WriteLine(prompt);
 
-            string categoryStr = contact.Category == null ? "-" : contact.Category.Name;
+            string categoryStr = contact.Category == null ?
+                "-" : 
+                contact.Category.Name;
 
             var table = new Table();
-            table.AddColumns("First Name", "Last Name", "Phone Number", "Email", "Category");
+            table.AddColumns(AppStrings.CONTACT_PROPERTIES);
             table.AddRow(
                 contact.FirstName,
                 contact.LastName,
                 contact.PhoneNumber,
-                contact.Email ?? "-",
-                contact.Category != null ? contact.Category.Name : "-");
+                contact.Email ?? AppStrings.NOVALUE,
+                contact.Category != null ? contact.Category.Name : AppStrings.NOVALUE);
 
             AnsiConsole.Write(table);
         }
@@ -232,11 +233,11 @@ namespace Phonebook
             {
                 table.AddColumn("");
                 table.HideHeaders();
-                table.AddRow("No contact match your criteria");
+                table.AddRow(AppStrings.NOCONTACT);
             }
             else
             {
-                table.AddColumns("First Name", "Last Name", "Phone Number", "Email", "Category");
+                table.AddColumns(AppStrings.CONTACT_PROPERTIES);
 
                 foreach (var contact in contacts)
                 {
@@ -270,11 +271,11 @@ namespace Phonebook
         /// <returns>Initialized Contact object based on values from user input</returns>
         public Contact GetNewContact(List<Category> categories)
         {
-            string firstName = GetName("Enter first name: ");
-            string lastName = GetName("Enter last name: ");
-            string phoneNumber = GetPhoneNumber("Enter phone number in format +xxxxxxx: ");
-            string? email = GetEmail("Enter email address (or enter 'NO' to leave it blank): ");
-            Category? category = SelectCategory(categories, "Please enter category for the contact");
+            string firstName = GetName(AppStrings.CONTACT_ENTERFIRSTNAME);
+            string lastName = GetName(AppStrings.CONTACT_ENTERLASTNAME);
+            string phoneNumber = GetPhoneNumber(AppStrings.CONTACT_ENTERPHONENUMBER);
+            string? email = GetEmail(AppStrings.CONTACT_ENTEREMAIL);
+            Category? category = SelectCategory(categories, AppStrings.SELECT_CATEGORY);
 
             Contact newContact = new Contact()
             {
@@ -284,7 +285,7 @@ namespace Phonebook
                 Email = email,
                 Category = category
             };
-            PrintContact(newContact, "Following contact will be added to your phonebook");
+            PrintContact(newContact, AppStrings.CONTACT_SUMMARY);
 
             return newContact;
         }
@@ -316,12 +317,12 @@ namespace Phonebook
         /// <returns>Contact object updated with new values</returns>
         public Contact GetUpdatedContact(Contact contact, List<Category> categories)
         {
-            contact.FirstName = GetName("Please enter new first name:", contact.FirstName);
-            contact.LastName = GetName("Please enter new last name:", contact.LastName);
+            contact.FirstName = GetName(AppStrings.CONTACT_ENTERFIRSTNAME, contact.FirstName);
+            contact.LastName = GetName(AppStrings.CONTACT_ENTERLASTNAME, contact.LastName);
 
-            contact.PhoneNumber = GetPhoneNumber("Enter phone number in format +xxxxxxx: ", contact.PhoneNumber);
-            contact.Email = GetEmail("Please enter new email value (or enter 'NO' to leave it blank): ", contact.Email);
-            contact.Category = SelectCategory(categories, "Please enter category for the contact");
+            contact.PhoneNumber = GetPhoneNumber(AppStrings.CONTACT_ENTERPHONENUMBER, contact.PhoneNumber);
+            contact.Email = GetEmail(AppStrings.CONTACT_ENTEREMAIL, contact.Email);
+            contact.Category = SelectCategory(categories, AppStrings.SELECT_CATEGORY);
 
             return contact;
         }
@@ -354,8 +355,8 @@ namespace Phonebook
         public string? GetEmail(string prompt, string? defaultValue = null)
         {
             var inputPrompt = new TextPrompt<string>(prompt)
-                .Validate(x => validEmailAddressFormat.IsMatch(x) || x.ToLower() == "no")
-                .ValidationErrorMessage("Enter a email address in correct format");
+                .Validate(x => validEmailAddressFormat.IsMatch(x) || x.ToLower() == AppStrings.NOVALUE)
+                .ValidationErrorMessage(AppStrings.INVALID_EMAILFORMAT);
 
             if (defaultValue != null)
             {
@@ -414,9 +415,9 @@ namespace Phonebook
         /// <returns>Category object with updated values</returns>
         public Category UpdateCategory(List<Category> categories)
         {
-            Category category = SelectCategory(categories, "Please select category to be updated", false)!;
+            Category category = SelectCategory(categories, AppStrings.SELECT_CATEGORY, false)!;
 
-            var newName = GetStringFromUser("Please select new category name: ");
+            var newName = GetStringFromUser(AppStrings.CATEGORY_NEWNAME);
             category.Name = newName;
 
             return category;
@@ -430,10 +431,10 @@ namespace Phonebook
         public Category GetNewCategory(string prompt, List<Category> categories)
         {
             var input = AnsiConsole.Prompt(
-                new TextPrompt<string>("Please enter name of category (alphanumberic words with spaces in between, cannot alredy exist): ")
+                new TextPrompt<string>(AppStrings.CATEGORY_NEWNAME)
                 .Validate(newCategory => !categories.Any(x => x.Name.ToLower() == newCategory.ToLower())
                     && validStringFormat.IsMatch(newCategory))
-                .ValidationErrorMessage("Invalid input format or category already exists")
+                .ValidationErrorMessage(AppStrings.INVALID_CATEGORYNAME)
                 );
 
             return new Category() { Name = input };
