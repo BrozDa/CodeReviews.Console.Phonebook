@@ -148,6 +148,11 @@ namespace Phonebook
                                     .OrderBy(x => x.FirstName)
                                     .ToList();
         }
+        public List<Contact> GetAllContactsWithEmail()
+        {
+            var contacts = Context.Contacts.Where(x => x.Email !=null).ToList();
+            return contacts;
+        }
         /// <summary>
         /// Inserts single Category to database
         /// </summary>

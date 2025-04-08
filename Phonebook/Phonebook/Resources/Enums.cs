@@ -9,6 +9,7 @@ internal enum MainMenuOption
     UpdateContact,
     DeleteContact,
     ManageCategories,
+    SendEmail,
     Exit,
 }
 /// <summary>

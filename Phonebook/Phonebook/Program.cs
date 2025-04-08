@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Phonebook.Services;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
@@ -15,19 +16,25 @@ namespace Phonebook
             var serviceProvider = services.BuildServiceProvider();
             var app = serviceProvider.GetRequiredService<PhoneBookApp>();
             app.Run();
+
+
         }
         public static void SetServices(IServiceCollection services)
         {
             services.AddSingleton<PhonebookContext>(new PhonebookContext());
-            services.AddSingleton<UserInteraction>(new UserInteraction());
-
+            services.AddSingleton<UserInteractionService>(new UserInteractionService());
+            
             services.AddSingleton(sp => new PhoneBookService(
                 sp.GetRequiredService<PhonebookContext>()
+                ));
+            services.AddSingleton(sp => new EmailService(
+                sp.GetRequiredService<UserInteractionService>()
                 ));
 
             services.AddSingleton(sp => new PhoneBookApp(
                 sp.GetRequiredService<PhoneBookService>(),
-                sp.GetRequiredService<UserInteraction>()
+                sp.GetRequiredService<UserInteractionService>(),
+                sp.GetRequiredService<EmailService>()
                 ));
                 
         }

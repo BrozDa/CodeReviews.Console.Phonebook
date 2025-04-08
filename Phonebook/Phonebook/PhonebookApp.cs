@@ -1,4 +1,6 @@
-﻿namespace Phonebook
+﻿using Phonebook.Services;
+
+namespace Phonebook
 {
     /// <summary>
     /// Main application class that manages the phonebook's core flow and user interaction.
@@ -6,17 +8,19 @@
     internal class PhoneBookApp
     {
         public PhoneBookService Service { get; set; }
-        public UserInteraction UiService { get; set; }
-
+        public UserInteractionService UiService { get; set; }
+        
+        public EmailService EmailService { get; set; }
         /// <summary>
         /// Initializes PhoneBookApp object
         /// </summary>
         /// <param name="service">Service used to manage database access</param>
         /// <param name="userInteraction">Service used to present or get data from user</param>
-        public PhoneBookApp(PhoneBookService service, UserInteraction userInteraction)
+        public PhoneBookApp(PhoneBookService service, UserInteractionService userInteraction, EmailService emailService)
         {
             Service = service;
             UiService = userInteraction;
+            EmailService = emailService;
         }
         /// <summary>
         /// Starts the phonebook application and controls the main loop.
@@ -60,6 +64,10 @@
                 case MainMenuOption.ManageCategories:
                     HandleManageCategoriesMenu();
                     break;
+
+                case MainMenuOption.SendEmail:
+                    HandleSendEmail();
+                    break;
             }
             Console.Clear();
         }
@@ -79,13 +87,13 @@
 
                 case ViewContactMenuOption.ViewContactByName:
                     string userInput = UiService
-                            .GetStringFromUser("Please enter full or part of a contact name (case insensitive): ")
+                            .GetStringFromUser(AppStrings.CONTACT_PARTNAME)
                             .ToLower();
                     contacts = Service.GetContactsStartingWith(userInput);
                     break;
 
                 case ViewContactMenuOption.ViewContactByCategory:
-                    Category? category = UiService.SelectCategory(categories, "Please select category");
+                    Category? category = UiService.SelectCategory(categories, AppStrings.SELECT_CATEGORY);
                     contacts = Service.GetContactsByCategory(category);
                     break;
             }
@@ -148,6 +156,29 @@
             }
         }
         /// <summary>
+        /// Handles sending of the email
+        /// </summary>
+        private void HandleSendEmail()
+        {
+            var contactsWithEmail = Service.GetAllContactsWithEmail();
+            var destinationEmail = UiService.SelectContact(contactsWithEmail, AppStrings.EMAIL_DESTINATION_PROMPT)
+                                    .Email!;
+
+
+            if (EmailService.SendEmail(destinationEmail))
+            {
+                Console.WriteLine(AppStrings.SENDEMAIL_SUCCESS);
+            }
+            else
+            {
+                Console.WriteLine(AppStrings.SENDEMAIL_FAIL);
+            }
+            UiService.PressAnyKeyToContinue();
+
+
+
+        }
+        /// <summary>
         /// Handles view contacts menu until user decides to exit to main menu
         /// </summary>
         private void HandleViewContactsMenu(List<Category> categories)
@@ -170,8 +201,8 @@
             Contact newContact = UiService.GetNewContact(categories);
 
             ConfirmAndExecute(() => Service.InsertContact(newContact),
-               "Contact added successfully",
-               "Contact not added, please contact admin");
+               AppStrings.CONTACT_ADD_SUCCESS,
+               AppStrings.CONTACT_ADD_FAIL);
         }
         /// <summary>
         /// Handles <see cref="MainMenuOption.UpdateContact"/> main menu option
@@ -180,14 +211,14 @@
         public void HandleUpdateContact(List<Category> categories)
         {
             List<Contact> contacts = Service.GetAllContacts();
-            Contact contact = UiService.SelectContact(contacts, "Please select contact to be updated");
+            Contact contact = UiService.SelectContact(contacts, AppStrings.CONTACT_SELECT);
             contact = UiService.GetUpdatedContact(contact, categories);
 
-            UiService.PrintContact(contact, "Updated contact information");
+            UiService.PrintContact(contact, AppStrings.CONTACT_UPDATE_SUMMARY);
 
             ConfirmAndExecute(() => Service.UpdateContact(contact),
-               "Contact updated successfully",
-               "Contact not updated, please contact admin");
+               AppStrings.CONTACT_UPDATE_SUCCESS,
+               AppStrings.CONTACT_UPDATE_FAIL);
         }
         /// <summary>
         /// Handles <see cref="MainMenuOption.DeleteContact"/> main menu option
@@ -196,13 +227,13 @@
         {
             List<Contact> contacts = Service.GetAllContacts();
 
-            Contact contact = UiService.SelectContact(contacts,"Please select contact to be deleted");
+            Contact contact = UiService.SelectContact(contacts, AppStrings.CONTACT_SELECT);
 
-            UiService.PrintContact(contact, "Following contact will be deleted from your phonebook");
+            UiService.PrintContact(contact, AppStrings.CONTACT_DELETE_SUMMARY);
 
             ConfirmAndExecute(() => Service.DeleteContact(contact),
-               "Contact deleted successfully",
-               "Contact not deleted, please contact admin");
+               AppStrings.CONTACT_DELETE_SUCCESS,
+               AppStrings.CONTACT_DELETE_FAIL);
         }
 
         /// <summary>
@@ -211,11 +242,11 @@
         /// <param name="categories">List of all available categories</param>
         public void HandleAddCategory(List<Category> categories)
         {
-            Category newCategory = UiService.GetNewCategory("Please enter new category name: ", categories);
+            Category newCategory = UiService.GetNewCategory(AppStrings.CATEGORY_NEWNAME, categories);
 
             ConfirmAndExecute(() => Service.InsertCategory(newCategory),
-               "Category added successfully",
-               "Category not added, please contact admin");
+               AppStrings.CATEGORY_ADD_SUCCESS,
+               AppStrings.CATEGORY_ADD_FAIL);
         }
         /// <summary>
         /// Handles <see cref="CategoryMenuOption.UpdateCategory"/> category menu option
@@ -225,11 +256,11 @@
         {
             Category updatedCategory = UiService.UpdateCategory(categories);
 
-            UiService.PrintCategory(updatedCategory, "Following category will be updated: ");
+            UiService.PrintCategory(updatedCategory, AppStrings.CATEGORY_ADD_SUMMARY);
 
             ConfirmAndExecute(() => Service.UpdateCategory(updatedCategory),
-               "Category updated successfully",
-               "Category not updated, please contact admin");
+               AppStrings.CATEGORY_UPDATE_SUCCESS,
+               AppStrings.CATEGORY_UPDATE_FAIL);
         }
         /// <summary>
         /// Handles <see cref="CategoryMenuOption.DeleteCategory"/> category menu option
@@ -238,13 +269,13 @@
         public void HandleDeleteCategory(List<Category> categories)
         {
             Category toBeDeleted = UiService.SelectCategory(categories,
-                "Please select category to be deleted", false)!;
+                AppStrings.CATEGORY_SELECT, false)!;
 
-            UiService.PrintCategory(toBeDeleted, "Following category will be deleted: ");
+            UiService.PrintCategory(toBeDeleted, AppStrings.CATEGORY_DELETE_SUMMARY);
 
             ConfirmAndExecute(() => Service.DeleteCategory(toBeDeleted),
-                "Category deleted successfully",
-                "Category not deleted, please contact admin");
+                AppStrings.CATEGORY_DELETE_SUCCESS,
+               AppStrings.CATEGORY_DELETE_FAIL);
         }
 
         /// <summary>

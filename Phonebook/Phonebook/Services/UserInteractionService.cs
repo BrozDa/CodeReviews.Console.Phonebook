@@ -1,4 +1,5 @@
 ﻿using Spectre.Console;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Phonebook
@@ -7,11 +8,12 @@ namespace Phonebook
     /// Handles all user interactions through the console interface.
     /// Provides prompts, validation, input parsing, and formatted output using Spectre.Console.
     /// </summary>
-    internal class UserInteraction
+    internal class UserInteractionService
     {
         private Regex validStringFormat = new Regex("^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$");
         private Regex validPhoneNumberFormat = new Regex(@"\+\d+");
         private Regex validEmailAddressFormat = new Regex(@"^[\w\.-]+@[\w\.-]+\.\w{2,}$");
+        private Regex validEmailSubjectFormat = new Regex("^[\x20-\x7E]{1,78}$");
 
         /// <summary>
         /// Prints application header to the console
@@ -112,6 +114,7 @@ namespace Phonebook
                     MainMenuOption.UpdateContact => AppStrings.MAINMENU_UPDATECONTACT,
                     MainMenuOption.DeleteContact => AppStrings.MAINMENU_DELETECONTACT,
                     MainMenuOption.ManageCategories => AppStrings.MAINMENU_DELETECONTACT,
+                    MainMenuOption.SendEmail => AppStrings.MAINMENU_SENDEMAIL,
                     MainMenuOption.Exit => AppStrings.MAINMENU_EXIT,
                     _ => throw new NotImplementedException(AppStrings.MAINMENU_INVALIDOPTION)
                 }));
@@ -285,7 +288,7 @@ namespace Phonebook
                 Email = email,
                 Category = category
             };
-            PrintContact(newContact, AppStrings.CONTACT_SUMMARY);
+            PrintContact(newContact, AppStrings.CONTACT_ADD_SUMMARY);
 
             return newContact;
         }
@@ -303,7 +306,7 @@ namespace Phonebook
                 .PageSize(10)
                 .EnableSearch()
                 .AddChoices(contacts)
-                .UseConverter(x => new string($"{x.FirstName} {x.LastName}"))
+                .UseConverter(x => new string($"{x.FirstName.PadRight(12)}\t{x.LastName.PadRight(12)}\t{x.Email ?? ""}"))
                 );
 
             return contact;
@@ -438,6 +441,46 @@ namespace Phonebook
                 );
 
             return new Category() { Name = input };
+        }
+        /// <summary>
+        /// Gets a email subject from user, input is validated
+        /// </summary>
+        /// <returns>Valid representation of email subject</returns>
+        public string GetEmailSubject()
+        {
+            var input = AnsiConsole.Prompt(
+                new TextPrompt<string>(AppStrings.EMAIL_SUBJECT_PROMPT)
+                .Validate(x => validEmailSubjectFormat.IsMatch(x))
+                );
+
+            return input;
+        }
+        /// <summary>
+        /// Gets email body from the user
+        /// User can add any value needed, but the body needs to end with delimination character
+        /// </summary>
+        /// <returns>string representing email body</returns>
+        public string GetEmailBody()
+        {
+            char borderChar = AppStrings.EMAIL_DELIMINATION_CHARACTER[0];
+
+            StringBuilder builder = new StringBuilder();
+            Console.WriteLine(AppStrings.EMAIL_BODY_PROMPT);
+
+            while (true)
+            {
+                string input = Console.ReadLine()!;
+                if (input.EndsWith(borderChar))
+                {
+                    builder.Append(input.TrimEnd(borderChar));
+                    
+                    break;
+                }
+
+                builder.Append(input + "\n");
+
+            }
+            return builder.ToString();
         }
     }
 }
