@@ -1,54 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Phonebook.Models;
-using System.Text.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Mail;
+using System.Web;
+
 
 namespace Phonebook
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            PhonebookContext context = new PhonebookContext();
-            PhoneBookService svc = new PhoneBookService(context, true);
-            UserInteraction ui = new UserInteraction();
-            PhonebookApp app = new PhonebookApp(svc, ui);
+            ServiceCollection services = new ServiceCollection();
+            SetServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var app = serviceProvider.GetRequiredService<PhoneBookApp>();
             app.Run();
+        }
+        public static void SetServices(IServiceCollection services)
+        {
+            services.AddSingleton<PhonebookContext>(new PhonebookContext());
+            services.AddSingleton<UserInteraction>(new UserInteraction());
 
-            /*Console.WriteLine("aaaA");
-            var json = File.ReadAllText("Resources/defaultData.json");
-            var seedData = JsonSerializer.Deserialize<DefaultData>(json);
+            services.AddSingleton(sp => new PhoneBookService(
+                sp.GetRequiredService<PhonebookContext>()
+                ));
 
-            using var context = new PhonebookContext();
-
-            foreach (var category in seedData.Categories) 
-            {
-                context.Categories.Add(new ContactCategory() { Name = category.Name! });
-            }
-            context.Categories.AddRange(context.Categories);
-
-            context.SaveChanges();
-
-            List<Contact> contacts = new List<Contact>();
-
-            foreach (var contact in seedData.Contacts)
-            {
-                if (!string.IsNullOrEmpty(contact.Category))
-                {
-                    Category category = context.Categories.FirstOrDefault(x => x.Name == contact.Category)!;
-                    contact.CategoryId = category.CategoryId;
-                }
-                contacts.Add(new Contact()
-                {
-                    FirstName = contact.FirstName,
-                    LastName = contact.LastName,
-                    PhoneNumber = contact.PhoneNumber,
-                    Email = contact.Email,
-                    ContactCategoryId = contact.CategoryId,
-
-                });
-            }
-            context.AddRange(contacts);
-            context.SaveChanges();*/
+            services.AddSingleton(sp => new PhoneBookApp(
+                sp.GetRequiredService<PhoneBookService>(),
+                sp.GetRequiredService<UserInteraction>()
+                ));
+                
         }
     }
 }

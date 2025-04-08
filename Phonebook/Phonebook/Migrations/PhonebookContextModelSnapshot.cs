@@ -35,6 +35,9 @@ namespace Phonebook.Migrations
 
                     b.HasKey("CategoryId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Categories");
                 });
 

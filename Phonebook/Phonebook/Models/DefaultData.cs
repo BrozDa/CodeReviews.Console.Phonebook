@@ -1,5 +1,8 @@
-﻿namespace Phonebook.Models
+﻿namespace Phonebook
 {
+    /// <summary>
+    /// Class representing default data which are seeded to the database on creation
+    /// </summary>
     internal class DefaultData
     {
         public List<DefaultCategory> Categories { get; set; } = new();
@@ -13,8 +16,9 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Category { get; set; }
-        public int? CategoryId { get; set; } 
+        public int? CategoryId { get; set; }
     }
+
     public class DefaultCategory
     {
         public string? Name { get; set; }

@@ -1,39 +1,45 @@
-﻿using Phonebook.Models;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Phonebook
 {
+    /// <summary>
+    /// Provides a service layer between the Phonebook application and the database.
+    /// Handles data access, CRUD operations, and optional auto-seeding from a JSON file.
+    /// </summary>
     internal class PhoneBookService
     {
         public PhonebookContext Context { get; set; }
-        public bool _autoSeed;
-        public PhoneBookService(PhonebookContext context, bool autoSeed = true)
+
+
+        /// <summary>
+        /// Initializes new instance PhoneBookService class
+        /// </summary>
+        /// <param name="context"><see cref="PhonebookContext"/> used for DB access</param>
+        public PhoneBookService(PhonebookContext context)
         {
-            Context = context;            
-            _autoSeed = autoSeed;
+            Context = context;
         }
-
-        public void InsertContact(Contact contact)
-        {
-            Context.Add(contact);
-            Context.SaveChanges();
-        } 
-
+        /// <summary>
+        /// Automatically seeds the database with default data if both Contacts and Categories are empty.
+        /// </summary>
         public void AutoSeed()
         {
-            if(!_autoSeed) { return; }
 
-            if (!Context.Contacts.Any() && !Context.Categories.Any()) 
+            if (!Context.Contacts.Any() && !Context.Categories.Any())
             {
                 var rawJson = File.ReadAllText("Resources/defaultData.json");
                 var deserializedJson = JsonSerializer.Deserialize<DefaultData>(rawJson);
 
-                if (deserializedJson == null){ return; }
+                if (deserializedJson == null) { return; }
 
                 AutoSeedCategories(deserializedJson);
                 AutoSeedContacts(deserializedJson);
             }
         }
+        /// <summary>
+        /// Seeds the database with default categories.
+        /// </summary>
+        /// <param name="data">The deserialized data containing default categories.</param>
         private void AutoSeedCategories(DefaultData data)
         {
             foreach (var defaultCategory in data.Categories)
@@ -43,6 +49,10 @@ namespace Phonebook
 
             Context.SaveChanges();
         }
+        /// <summary>
+        /// Seeds the database with default contacts.
+        /// </summary>
+        /// <param name="data">The deserialized data containing default contacts.</param>
         private void AutoSeedContacts(DefaultData data)
         {
             foreach (var defaultContact in data.Contacts)
@@ -69,86 +79,113 @@ namespace Phonebook
             Context.SaveChanges();
         }
 
-        public bool AddContact(Contact contact)
+        /// <summary>
+        /// Inserts single Contact to database
+        /// </summary>
+        /// <param name="contact"><see cref="Contact"/> to be inserted</param>
+        /// <returns>true if the contact was sucessfully inserted, false otherwise</returns>
+        public bool InsertContact(Contact contact)
         {
             Context.Contacts.Add(contact);
             return Context.SaveChanges() > 0;
         }
-        public bool UpdateContact(int originalContactId, Contact updatedContact)
+        /// <summary>
+        /// Updates single Contact to database
+        /// </summary>
+        /// <param name="contact"><see cref="Contact"/> updated with new values</param>
+        /// <returns>true if the contact was sucessfully updated, false otherwise</returns>
+        public bool UpdateContact(Contact updatedContact)
         {
-            Contact? original = Context.Contacts.Where(x => x.ContactId == originalContactId).FirstOrDefault();
-            if (original is null) return false;
-
-            original.FirstName = updatedContact.FirstName;
-            original.LastName = updatedContact.LastName;
-            original.PhoneNumber = updatedContact.PhoneNumber;
-            original.Email = updatedContact.Email;
+            Context.Contacts.Update(updatedContact);
 
             return Context.SaveChanges() > 0;
         }
-        public bool RemoveContact(Contact contact) 
-        { 
+        /// <summary>
+        /// Deletes single Contact to database
+        /// </summary>
+        /// <param name="contact"><see cref="Contact"/> to be deleted</param>
+        /// <returns>true if the contact was sucessfully deleted, false otherwise</returns>
+        public bool DeleteContact(Contact contact)
+        {
             Context.Contacts.Remove(contact);
             return Context.SaveChanges() > 0;
         }
+        /// <summary>
+        /// Retrieves a list of all contacts from the database
+        /// </summary>
+        /// <returns>A list containing all contact records</returns>
         public List<Contact> GetAllContacts()
         {
             var contacts = Context.Contacts.OrderBy(x => x.FirstName).ToList();
             return contacts;
         }
-        public List<Contact> GetContactsByName(string name)
+        /// <summary>
+        /// Retrieves all contacts from the database whose first name starts with given name
+        /// </summary>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>A list of matching contacts.</returns>
+        public List<Contact> GetContactsStartingWith(string name)
         {
-            var contacts = Context.Contacts.Where(x => x.FirstName
-                                    .ToLower()
+            var contacts = Context.Contacts.Where(x => x.FirstName.ToLower()
                                     .StartsWith(name))
                                     .OrderBy(x => x.FirstName);
 
             return contacts.ToList();
         }
-        public List<Contact> GetContactsByCategory(Category category)
+        /// <summary>
+        /// Retrieves all contacts from the database whose first name starts with given name
+        /// </summary>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>A list of matching contacts.</returns>
+        public List<Contact> GetContactsByCategory(Category? category)
         {
-            var contacts = Context.Contacts.Where(x => x.CategoryId == category.CategoryId)
+            if (category == null)
+            {
+                return Context.Contacts.Where(x => x.Category == null).ToList();
+            }
+
+            return Context.Contacts.Where(x => x.CategoryId == category.CategoryId)
                                     .OrderBy(x => x.FirstName)
                                     .ToList();
-
-            return contacts.ToList();
         }
-        public Contact? GetContactById(int id)
-        {
-            return Context.Contacts.Where(x => x.ContactId == id).FirstOrDefault();
-        }
-
-        public bool AddCategory(Category category)
+        /// <summary>
+        /// Inserts single Category to database
+        /// </summary>
+        /// <param name="category"><see cref="Category"/> to be inserted</param>
+        /// <returns>true if the category was sucessfully inserted, false otherwise</returns>
+        public bool InsertCategory(Category category)
         {
             Context.Categories.Add(category);
             return Context.SaveChanges() > 0;
         }
-        public bool UpdateCategoty(int originalCategoryId, Category updatedCategory)
+        /// <summary>
+        /// Updates single existing category in the database
+        /// </summary>
+        /// <param name="category"><see cref="Category"/> updated with new values</param>
+        /// <returns>true if the category was sucessfully updated, false otherwise</returns>
+        public bool UpdateCategory(Category updatedCategory)
         {
-            Category? original = Context.Categories.Where(x => x.CategoryId == originalCategoryId).FirstOrDefault(); 
-            if (original is null) return false;
-
-            original.Name = updatedCategory.Name;
-
+            Context.Categories.Update(updatedCategory);
             return Context.SaveChanges() > 0;
         }
-        public bool RemoveCategory(Category category)
+        /// <summary>
+        /// Deleted single Category from database
+        /// </summary>
+        /// <param name="category"><see cref="Category"/> to be deleted</param>
+        /// <returns>true if the category was sucessfully deleted, false otherwise</returns>
+        public bool DeleteCategory(Category category)
         {
             Context.Categories.Remove(category);
             return Context.SaveChanges() > 0;
         }
+        /// <summary>
+        /// Retrieves list of all Categories from the database
+        /// </summary>
+        /// <returns>A List of all Categories in the database</returns>
         public List<Category> GetAllCategories()
         {
             var contacts = Context.Categories.ToList();
             return contacts;
         }
-        public Category? GetCategoryById(int id)
-        {
-            return Context.Categories.Where(x => x.CategoryId == id).FirstOrDefault();
-        }
-
-
-
-
     }
 }

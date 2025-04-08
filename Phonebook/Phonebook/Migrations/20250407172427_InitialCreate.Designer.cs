@@ -11,7 +11,7 @@ using Phonebook;
 namespace Phonebook.Migrations
 {
     [DbContext(typeof(PhonebookContext))]
-    [Migration("20250402123646_InitialCreate")]
+    [Migration("20250407172427_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,6 +37,9 @@ namespace Phonebook.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
