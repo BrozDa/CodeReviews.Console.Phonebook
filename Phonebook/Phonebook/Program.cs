@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Phonebook.Services;
-using System.Net;
-using System.Net.Mail;
-using System.Web;
 
 
 namespace Phonebook

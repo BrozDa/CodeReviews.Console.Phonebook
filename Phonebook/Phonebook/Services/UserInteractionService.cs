@@ -210,10 +210,6 @@ namespace Phonebook
         {
             Console.WriteLine(prompt);
 
-            string categoryStr = contact.Category == null ?
-                AppStrings.NOVALUE : 
-                contact.Category.Name;
-
             var table = new Table();
             table.AddColumns(AppStrings.CONTACT_PROPERTIES);
             table.AddRow(
